@@ -13,11 +13,15 @@ public class PlayerController : MonoBehaviour
     public float polarity;
     private Camera cam;
     public Rigidbody rb;
-    public SphereCollider field;
+    public BoxCollider field;
     private MeshRenderer fieldRenderer;
+    public Material posFieldMatBox;
+    public Material negFieldMatBox;
     [Header("The materials for the magnetic fields")]
-    [SerializeField] Material posFieldMat;
-    [SerializeField] Material negFieldMat;
+    // [SerializeField] Material posFieldMat;
+    // [SerializeField] Material negFieldMat;
+    [SerializeField] Material fieldMat;
+    
     // Input variables
     private float rightLeftInput;
     private float forwardBackInput;
@@ -30,7 +34,7 @@ public class PlayerController : MonoBehaviour
         cam = this.GetComponentInChildren<Camera>();
         rb = this.GetComponent<Rigidbody>();
         rb.mass = CalculateMass(transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        field = this.GetComponentInChildren<SphereCollider>();
+        field = this.GetComponentInChildren<BoxCollider>();
         fieldRenderer = field.GetComponent<MeshRenderer>();
     }
     void Update() // Resets certain variables every frame
@@ -81,13 +85,15 @@ public class PlayerController : MonoBehaviour
         {
             polarity = magInput;
             fieldRenderer.enabled = true;
-            fieldRenderer.material = posFieldMat;
+            // fieldRenderer.material = posFieldMat;
+             fieldRenderer.material = posFieldMatBox;
         }        
         if(magInput == -1)
         {
             polarity = magInput;
             fieldRenderer.enabled = true;
-            fieldRenderer.material = negFieldMat;
+            // fieldRenderer.material = negFieldMat;
+             fieldRenderer.material = negFieldMatBox;
         }
         // Mouse controlled camera movement
         cam.transform.localRotation = Quaternion.Euler(mouseInput.y,0,0);

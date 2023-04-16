@@ -11,14 +11,14 @@ public class Magnet : MonoBehaviour
     [Header("True = Positive, False = Negative")]
     [SerializeField] public bool polarity;
     private Rigidbody rb;
-    private SphereCollider field;
+    private BoxCollider field;
     public float maxVelocity;
     private Utilities utilities = new Utilities();
     void Start() // Initializes components
     {
         rb = this.GetComponent<Rigidbody>();
         rb.mass = CalculateMass(transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        field = this.GetComponent<SphereCollider>();
+        field = this.GetComponent<BoxCollider>();
     }
     void FixedUpdate() // Clamps Rigidbody velocity
     {
