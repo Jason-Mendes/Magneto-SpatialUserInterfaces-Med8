@@ -14,53 +14,52 @@ public class Magnet : MonoBehaviour
     private BoxCollider field;
     public float maxVelocity;
     private Utilities utilities = new Utilities();
+
+    public Transform storeObjTrans;
+    public float speed = .1f;
+
+    List<GameObject> pickedUpObjects = new List<GameObject>();
     void Start() // Initializes components
     {
-        rb = this.GetComponent<Rigidbody>();
-        rb.mass = CalculateMass(transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        field = this.GetComponent<BoxCollider>();
-    }
-    void FixedUpdate() // Clamps Rigidbody velocity
-    {
-        ClampVelocity(rb, maxVelocity);
+
     }
 
-    void OnTriggerStay(Collider other) // Determines if the player is within the magnetic field of this magnet
+    void OnTriggerEnter(Collider other) // Determines if the player is within the magnetic field of this magnet
     {
-        if(other == player.field)
+        Item collindingItem = other.GetComponent<Item>();
+        if (collindingItem)
         {
-            // These check the polarity of the magnet and the player and call the appropriate method accordingly
-            if(player.polarity == 1) 
-            {
-                if(polarity)
-                {
-                    Attract();
-                }
-                else
-                {
-                    Repel();
-                }
-            }
-            else if(player.polarity == -1)
-            {
-                if(!polarity)
-                {
-                    Attract();
-                }
-                else
-                {
-                    Repel();
-                }
-            }
+
+            other.transform.SetParent(storeObjTrans, true);
+            pickedUpObjects.Add(other.gameObject);
         }
+    }
+
+    public void DropItems()
+    {
+        pickedUpObjects.Clear();
+    }
+
+    private void FixedUpdate()
+    {
+        if (player.polarity == 1)
+        {
+            Attract();
+        }
+        else if (player.polarity == -1)
+            Repel();
     }
 
     void Attract() // Attraction logic
     {
-        
-        if(player.rb.mass > rb.mass) // Moves smaller magnet towards player
+        foreach (GameObject obj in pickedUpObjects)
         {
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, 0.2f);
+            Vector3 norm = Vector3.Normalize(obj.transform.position - storeObjTrans.position);
+            obj.transform.position -= norm*speed;
+        }
+        //if(player.rb.mass > rb.mass) // Moves smaller magnet towards player
+        {
+            //transform.position = Vector3.MoveTowards(transform.position, player.transform.position, 0.2f);
             //Vector3 vector = transform.position - player.transform.position;
             //float distance = Mathf.Clamp(Vector3.Magnitude(vector), 5f, 10f);
             //vector.Normalize();
@@ -69,9 +68,9 @@ public class Magnet : MonoBehaviour
 
             // ^ Alternate attraction method, not being used ^
         }
-        else if(player.rb.mass <= rb.mass) // Moves player towards larger magnet
+        //else if(player.rb.mass <= rb.mass) // Moves player towards larger magnet
         {
-            player.transform.position = Vector3.MoveTowards(player.transform.position, transform.position, 0.2f);
+            //player.transform.position = Vector3.MoveTowards(player.transform.position, transform.position, 0.2f);
             //Vector3 vector = player.transform.position - transform.position;
             //float distance = Mathf.Clamp(Vector3.Magnitude(vector), 5f, 10f);
             //vector.Normalize();
@@ -81,9 +80,15 @@ public class Magnet : MonoBehaviour
             // ^ Alternate attraction method, not being used ^
         } 
     }
+
     void Repel() // Repulsion logic
     {
-        if(player.transform.localScale.x > transform.localScale.x) // Moves smaller magnet away from player
+        foreach (GameObject obj in pickedUpObjects)
+        {
+            Vector3 norm = Vector3.Normalize(obj.transform.position - storeObjTrans.position);
+            obj.transform.position += norm * speed;
+        }
+        /*if(player.transform.localScale.x > transform.localScale.x) // Moves smaller magnet away from player
         { 
             Vector3 vector = transform.position - player.transform.position;
             float distance = Mathf.Clamp(Vector3.Magnitude(vector), 5f, 10f);
@@ -98,6 +103,6 @@ public class Magnet : MonoBehaviour
             vector.Normalize();
             vector *= 1/distance;
             player.transform.position += vector;   
-        } 
+        } */
     }
 }
