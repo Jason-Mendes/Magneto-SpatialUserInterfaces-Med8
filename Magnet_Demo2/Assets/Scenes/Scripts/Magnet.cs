@@ -19,6 +19,11 @@ public class Magnet : MonoBehaviour
     public float speed = .1f;
 
     List<GameObject> pickedUpObjects = new List<GameObject>();
+
+    public Transform dir;
+
+    public Transform stopTrans;
+
     void Start() // Initializes components
     {
 
@@ -29,14 +34,27 @@ public class Magnet : MonoBehaviour
         Item collindingItem = other.GetComponent<Item>();
         if (collindingItem)
         {
-
+            other.GetComponent<Rigidbody>().isKinematic = true;
             other.transform.SetParent(storeObjTrans, true);
             pickedUpObjects.Add(other.gameObject);
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        Item collindingItem = other.GetComponent<Item>();
+        if (collindingItem)
+        {
+            other.GetComponent<Rigidbody>().isKinematic = false;
+            other.transform.SetParent(null);
+            pickedUpObjects.Remove(other.gameObject);
+        }
+    }
+
     public void DropItems()
     {
+        foreach (GameObject obj in pickedUpObjects)
+            obj.GetComponent<Rigidbody>().isKinematic = false;
         pickedUpObjects.Clear();
     }
 
@@ -54,8 +72,8 @@ public class Magnet : MonoBehaviour
     {
         foreach (GameObject obj in pickedUpObjects)
         {
-            Vector3 norm = Vector3.Normalize(obj.transform.position - storeObjTrans.position);
-            obj.transform.position -= norm*speed;
+            Vector3 norm = Vector3.Normalize(dir.position - storeObjTrans.position);
+            obj.transform.position -= norm * speed;
         }
         //if(player.rb.mass > rb.mass) // Moves smaller magnet towards player
         {
@@ -85,7 +103,7 @@ public class Magnet : MonoBehaviour
     {
         foreach (GameObject obj in pickedUpObjects)
         {
-            Vector3 norm = Vector3.Normalize(obj.transform.position - storeObjTrans.position);
+            Vector3 norm = Vector3.Normalize(dir.position - storeObjTrans.position);
             obj.transform.position += norm * speed;
         }
         /*if(player.transform.localScale.x > transform.localScale.x) // Moves smaller magnet away from player

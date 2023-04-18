@@ -105,6 +105,7 @@ public class PlayerController : MonoBehaviour
             magnet.storeObjTrans.transform.DetachChildren();
             field.enabled = false;
             magnet.DropItems();
+            
         }
         // Mouse controlled camera movement
         cam.transform.localRotation = Quaternion.Euler(mouseInput.y,0,0);
