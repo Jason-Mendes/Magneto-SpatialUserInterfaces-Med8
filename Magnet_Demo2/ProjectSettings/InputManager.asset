@@ -89,8 +89,8 @@ InputManager:
     m_Name: Magnet
     descriptiveName: L/R Triggers
     descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: 
+    negativeButton: l
+    positiveButton: r
     altNegativeButton: 
     altPositiveButton: 
     gravity: 3

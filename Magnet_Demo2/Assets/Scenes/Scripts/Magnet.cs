@@ -34,9 +34,12 @@ public class Magnet : MonoBehaviour
         Item collindingItem = other.GetComponent<Item>();
         if (collindingItem)
         {
-            other.GetComponent<Rigidbody>().isKinematic = true;
+            //other.GetComponent<Rigidbody>().useGravity = false;
+            other.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             other.transform.SetParent(storeObjTrans, true);
             pickedUpObjects.Add(other.gameObject);
+            other.GetComponent<Item>().PickUp(true);
+
         }
     }
 
@@ -45,16 +48,31 @@ public class Magnet : MonoBehaviour
         Item collindingItem = other.GetComponent<Item>();
         if (collindingItem)
         {
-            other.GetComponent<Rigidbody>().isKinematic = false;
+            other.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+
+            //other.GetComponent<Rigidbody>().useGravity = true;
             other.transform.SetParent(null);
+            other.GetComponent<Item>().PickUp(false);
             pickedUpObjects.Remove(other.gameObject);
         }
+    }
+
+    public void RemoveItem(GameObject removedObj)
+    {
+        removedObj.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+        removedObj.GetComponent<Item>().PickUp(false);
+        pickedUpObjects.Remove(removedObj);
     }
 
     public void DropItems()
     {
         foreach (GameObject obj in pickedUpObjects)
-            obj.GetComponent<Rigidbody>().isKinematic = false;
+        {
+            obj.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            obj.GetComponent<Item>().PickUp(true);
+
+        }
+        //obj.GetComponent<Rigidbody>().useGravity = true;
         pickedUpObjects.Clear();
     }
 
@@ -73,7 +91,10 @@ public class Magnet : MonoBehaviour
         foreach (GameObject obj in pickedUpObjects)
         {
             Vector3 norm = Vector3.Normalize(dir.position - storeObjTrans.position);
-            obj.transform.position -= norm * speed;
+
+            obj.GetComponent<Item>().Attract(norm, speed);
+            //obj.GetComponent<Rigidbody>().MovePosition(obj.transform.position - norm * speed * Time.deltaTime);
+            //obj.transform.position -= norm * speed;
         }
         //if(player.rb.mass > rb.mass) // Moves smaller magnet towards player
         {
@@ -104,7 +125,11 @@ public class Magnet : MonoBehaviour
         foreach (GameObject obj in pickedUpObjects)
         {
             Vector3 norm = Vector3.Normalize(dir.position - storeObjTrans.position);
-            obj.transform.position += norm * speed;
+
+            obj.GetComponent<Item>().Repel(norm, speed);
+
+            //obj.transform.position += norm * speed;
+            //obj.GetComponent<Rigidbody>().MovePosition(obj.transform.position + norm * speed * Time.deltaTime);
         }
         /*if(player.transform.localScale.x > transform.localScale.x) // Moves smaller magnet away from player
         { 
