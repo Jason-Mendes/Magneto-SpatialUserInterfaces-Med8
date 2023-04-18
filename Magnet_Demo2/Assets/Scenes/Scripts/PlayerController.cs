@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 using static Utilities;
 
 public class PlayerController : MonoBehaviour
@@ -41,6 +42,9 @@ public class PlayerController : MonoBehaviour
     }
     void Update() // Resets certain variables every frame
     {
+        if (inputDevices.Count < 2)
+            InitializeInputReader();
+
         GetMoveInput();
         polarity = magInput;
     }
@@ -110,5 +114,19 @@ public class PlayerController : MonoBehaviour
         // Mouse controlled camera movement
         cam.transform.localRotation = Quaternion.Euler(mouseInput.y,0,0);
         transform.localRotation = Quaternion.Euler(0,mouseInput.x,0); 
+    }
+
+    List<InputDevice> inputDevices = new List<InputDevice>();
+
+    void InitializeInputReader()
+    {
+        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Right | InputDeviceCharacteristics.Controller, inputDevices);
+
+        foreach(var inputDevice in inputDevices)
+        {
+            inputDevice.TryGetFeatureValue(CommonUsages.trigger, out float triggerValue);
+
+            Debug.Log(inputDevice.name + " " + triggerValue);
+        }
     }
 }
