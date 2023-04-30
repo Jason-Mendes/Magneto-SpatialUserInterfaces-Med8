@@ -7,12 +7,12 @@ public class Goal : MonoBehaviour
 {
     public TMP_Text scoreText;
     int score = 0;
+    public AudioSource goalSound;
 
-    Magnet magnet;
-
+    public Magnet magnet;
     private void Start()
     {
-        magnet = GameObject.FindObjectOfType<Magnet>();
+        //magnet = GameObject.FindObjectOfType<Magnet>();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -21,5 +21,6 @@ public class Goal : MonoBehaviour
         magnet.RemoveItem(collision.gameObject);
         Destroy(collision.gameObject);
         scoreText.text = score.ToString();
+        goalSound.Play();
     }
 }

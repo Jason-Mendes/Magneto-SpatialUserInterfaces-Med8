@@ -23,6 +23,10 @@ public class PlayerController : MonoBehaviour
     // [SerializeField] Material posFieldMat;
     // [SerializeField] Material negFieldMat;
     [SerializeField] Material fieldMat;
+
+    public AudioSource posAudioSource;
+    public AudioSource negAudioSource;
+
     
     // Input variables
     private float magInput;
@@ -56,7 +60,10 @@ public class PlayerController : MonoBehaviour
              fieldRenderer.material = posFieldMatBox;
             //field.enabled = true;
             field.gameObject.SetActive(true);
-
+            if (!posAudioSource.isPlaying)
+                posAudioSource.Play();
+            if (negAudioSource.isPlaying)
+                negAudioSource.Stop();
         }
         else if(magInput == -1)
         {
@@ -66,6 +73,10 @@ public class PlayerController : MonoBehaviour
              fieldRenderer.material = negFieldMatBox;
             //field.enabled = true;
             field.gameObject.SetActive(true);
+            if (posAudioSource.isPlaying)
+                posAudioSource.Stop();
+            if (!negAudioSource.isPlaying)
+                negAudioSource.Play();
 
 
         }
@@ -76,6 +87,10 @@ public class PlayerController : MonoBehaviour
             field.gameObject.SetActive(false);
             //field.enabled = false;
             magnet.DropItems();
+            if (posAudioSource.isPlaying)
+                posAudioSource.Stop();
+            if (negAudioSource.isPlaying)
+                negAudioSource.Stop();
         }
     }
 
